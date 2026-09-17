@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: ewarrior
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:ewarrior}?useSSL=false&serverTimezone=UTC
+    username: ${DB_USER:ewarrior}
+    password: ${DB_PASSWORD:}
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 12MB
+
+access:
+  jwt:
+    secret: ${JWT_SECRET:change-me-in-every-environment-min-32-chars}
+    ttl-seconds: 3600
+  storage:
+    root: ${STORAGE_ROOT:/var/access}
+    max-card-bytes: 2097152
+    max-document-bytes: 10485760
+  seed:
+    admin-ad-object-guid: ${SEED_ADMIN_GUID:}
+    admin-name: ${SEED_ADMIN_NAME:Platform Administrator}
+    admin-email: ${SEED_ADMIN_EMAIL:admin@example.com}
+  public-card:
+    base-url: ${PUBLIC_CARD_BASE_URL:https://cards.example.com}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+access:
+  auth:
+    provider: local
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  ldap:
+    urls: ${LDAP_URL:ldaps://dc.example.com:636}
+    base: ${LDAP_BASE:DC=example,DC=com}
+    username: ${LDAP_BIND_USER:}
+    password: ${LDAP_BIND_PASSWORD:}
+access:
+  auth:
+    provider: ad
+    ad:
+      domain: ${AD_DOMAIN:example.com}
+      search-base: ${AD_SEARCH_BASE:OU=Staff,DC=example,DC=com}
